@@ -1,62 +1,10 @@
 
 const API_URL = "https://django-rest-api-project-1.onrender.com/api";
 
-let token = sessionStorage.getItem("taskToken");
-
-async function login() {
-    const username = prompt("Enter your Django username:");
-    const password = prompt("Enter your Django password:");
-
-    if (!username || !password) {
-        alert("Username and password are required.");
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/login/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error("Login failed. Check your credentials.");
-        }
-
-        token = data.token;
-        sessionStorage.setItem("taskToken", token);
-
-        await loadTasks();
-
-    } catch (error) {
-        alert(error.message);
-    }
-}
-
+// Load and display tasks
 async function loadTasks() {
-    if (!token) {
-        await login();
-        return;
-    }
-
     try {
-        const response = await fetch(`${API_URL}/tasks/`, {
-            headers: {
-                "Authorization": `Token ${token}`
-            }
-        });
-
-        if (response.status === 401) {
-            sessionStorage.removeItem("taskToken");
-            token = null;
-            alert("Your session expired. Please log in again.");
-            await login();
-            return;
-        }
+        const response = await fetch(`${API_URL}/tasks/`);
 
         if (!response.ok) {
             throw new Error("Could not load tasks.");
@@ -65,8 +13,10 @@ async function loadTasks() {
         const tasks = await response.json();
 
         document.getElementById("totalTasks").textContent = tasks.length;
+
         document.getElementById("completedTasks").textContent =
             tasks.filter(task => task.completed).length;
+
         document.getElementById("pendingTasks").textContent =
             tasks.filter(task => !task.completed).length;
 
@@ -107,6 +57,7 @@ async function loadTasks() {
     }
 }
 
+// Add a new task
 document.getElementById("taskForm").addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -117,8 +68,7 @@ document.getElementById("taskForm").addEventListener("submit", async function(ev
         const response = await fetch(`${API_URL}/tasks/`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Token ${token}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 title: title,
@@ -139,42 +89,51 @@ document.getElementById("taskForm").addEventListener("submit", async function(ev
     }
 });
 
+// Update task completion
 async function updateTask(task) {
-    const response = await fetch(`${API_URL}/tasks/${task.id}/`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Token ${token}`
-        },
-        body: JSON.stringify({
-            title: task.title,
-            description: task.description,
-            completed: !task.completed
-        })
-    });
+    try {
+        const response = await fetch(`${API_URL}/tasks/${task.id}/`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: task.title,
+                description: task.description,
+                completed: !task.completed
+            })
+        });
 
-    if (response.ok) {
-        await loadTasks();
-    } else {
-        alert("Could not update task.");
+        if (response.ok) {
+            await loadTasks();
+        } else {
+            alert("Could not update task.");
+        }
+
+    } catch (error) {
+        alert(error.message);
     }
 }
 
+// Delete a task
 async function deleteTask(id) {
     if (!confirm("Are you sure you want to delete this task?")) return;
 
-    const response = await fetch(`${API_URL}/tasks/${id}/`, {
-        method: "DELETE",
-        headers: {
-            "Authorization": `Token ${token}`
-        }
-    });
+    try {
+        const response = await fetch(`${API_URL}/tasks/${id}/`, {
+            method: "DELETE"
+        });
 
-    if (response.ok) {
-        await loadTasks();
-    } else {
-        alert("Could not delete task.");
+        if (response.ok) {
+            await loadTasks();
+        } else {
+            alert("Could not delete task.");
+        }
+
+    } catch (error) {
+        alert(error.message);
     }
 }
 
+// Start the application
 loadTasks();
