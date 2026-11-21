@@ -5,8 +5,7 @@ from rest_framework import status
 
 from .models import Task
 from .serializers import TaskSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import permission_classes
+
 
 
 # Home API
@@ -20,7 +19,6 @@ def home(request):
 
 # Get all tasks and create a new task
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
 def task_list(request):
 
     if request.method == 'GET':
@@ -46,7 +44,6 @@ def task_list(request):
 
 # View, update and delete a single task
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
 def task_detail(request, pk):
 
     try:
