@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Task Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>TaskFlow</h1>
+        <p>Organize your work. Achieve more.</p>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h2>Welcome to TaskFlow!</h2>
+            <p>Manage your tasks easily and stay productive.</p>
+        </section>
+
+        <section class="dashboard">
+            <div class="card">
+                <h3>Total Tasks</h3>
+                <p id="totalTasks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Completed</h3>
+                <p id="completedTasks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Pending</h3>
+                <p id="pendingTasks">0</p>
+            </div>
+        </section>
+
+        <section class="task-form">
+            <h2>Add a New Task</h2>
+            <form id="taskForm">
+                <input type="text" id="title" placeholder="Task title" required>
+                <textarea id="description" placeholder="Task description" required></textarea>
+                <button type="submit">Add Task</button>
+            </form>
+        </section>
+
+        <section class="tasks">
+            <h2>My Tasks</h2>
+            <div id="taskList">Loading tasks...</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>TaskFlow &copy; 2026 | Powered by Django REST Framework</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
